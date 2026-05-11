@@ -206,32 +206,70 @@
         document.getElementById('lock-message').innerText = msg;
     }
 
-    function loadQuestion() {
+  function loadQuestion() {
         if(currentIdx >= finalQuestions.length) return finish();
+        
         const data = finalQuestions[currentIdx];
+        
+        // تحديث العداد ونوع السؤال
         document.getElementById('q-counter').innerText = `سؤال ${currentIdx+1} من ${finalQuestions.length}`;
         document.getElementById('q-type-label').innerText = data.t;
-      const qElem = document.getElementById('question-text');
+
+        // تجهيز مكان نص السؤال (أو القطعة) لضمان عدم الاختصار بالنقاط
+        const qElem = document.getElementById('question-text');
         qElem.innerHTML = data.q;
-        qElem.style.display = "block";
+        
+        // فرض التنسيقات برمجياً لضمان ظهور النص كاملاً
+        qElem.style.display = "block"; 
         qElem.style.whiteSpace = "normal";
+        qElem.style.width = "100%";
+        qElem.style.height = "auto";
+
+        // إخفاء زر "التالي" عند تحميل سؤال جديد
         document.getElementById('next-btn').classList.add('hidden');
-        const box = document.getElementById('options-area'); box.innerHTML = '';
+
+        // تجهيز منطقة الخيارات
+        const box = document.getElementById('options-area'); 
+        box.innerHTML = '';
+
+        // خلط الخيارات وعرضها
         [...data.opts].sort(() => Math.random() - 0.5).forEach(o => {
-            const d = document.createElement('div'); d.className = 'opt'; d.innerText = o;
+            const d = document.createElement('div'); 
+            d.className = 'opt'; 
+            d.innerText = o;
+
             d.onclick = () => {
-                clearInterval(timer);
-                const isCorrect = (o === data.ans); if(isCorrect) userScore++;
-                studentAnswers.push({ qText: data.q, studentAns: o, correctAns: data.ans, isCorrect: isCorrect, type: data.t });
+                clearInterval(timer); // إيقاف المؤقت عند الإجابة
+                
+                const isCorrect = (o === data.ans); 
+                if(isCorrect) userScore++;
+
+                // تسجيل الإجابة للتقرير النهائي
+                studentAnswers.push({ 
+                    qText: data.q, 
+                    studentAns: o, 
+                    correctAns: data.ans, 
+                    isCorrect: isCorrect, 
+                    type: data.t 
+                });
+
+                // تلوين الإجابات ومنع الضغط المتكرر
                 document.querySelectorAll('.opt').forEach(el => {
                     el.onclick = null;
-                    if(el.innerText === data.ans) el.classList.add('correct');
-                    else if(el.innerText === o) el.classList.add('wrong');
+                    if(el.innerText === data.ans) {
+                        el.classList.add('correct');
+                    } else if(el.innerText === o) {
+                        el.classList.add('wrong');
+                    }
                 });
+
+                // إظهار زر الانتقال للسؤال التالي
                 document.getElementById('next-btn').classList.remove('hidden');
             };
             box.appendChild(d);
         });
+
+        // تشغيل المؤقت الزمني
         startTimer();
     }
 
