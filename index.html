@@ -211,7 +211,10 @@
         const data = finalQuestions[currentIdx];
         document.getElementById('q-counter').innerText = `سؤال ${currentIdx+1} من ${finalQuestions.length}`;
         document.getElementById('q-type-label').innerText = data.t;
-        document.getElementById('question-text').innerHTML = data.q;
+      const qElem = document.getElementById('question-text');
+        qElem.innerHTML = data.q;
+        qElem.style.display = "block";
+        qElem.style.whiteSpace = "normal";
         document.getElementById('next-btn').classList.add('hidden');
         const box = document.getElementById('options-area'); box.innerHTML = '';
         [...data.opts].sort(() => Math.random() - 0.5).forEach(o => {
